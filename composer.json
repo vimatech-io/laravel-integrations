@@ -26,9 +26,9 @@
     "require-dev": {
         "larastan/larastan": "^3.0",
         "laravel/pint": "^1.18",
-        "orchestra/testbench": "^9.0 || ^10.0",
-        "pestphp/pest": "^3.5",
-        "pestphp/pest-plugin-laravel": "^3.0",
+        "orchestra/testbench": "^9.0 || ^10.0 || ^11.0",
+        "pestphp/pest": "^3.5 || ^4.0",
+        "pestphp/pest-plugin-laravel": "^3.0 || ^4.0",
         "phpstan/phpstan": "^2.0"
     },
     "suggest": {
@@ -45,11 +45,9 @@
         }
     },
     "scripts": {
-        "test": "pest",
-        "test:coverage": "pest --coverage",
-        "lint": "pint",
-        "lint:test": "pint --test",
-        "stan": "phpstan analyse"
+        "test": "vendor/bin/pest",
+        "analyse": "vendor/bin/phpstan analyse --memory-limit=512M",
+        "format": "vendor/bin/pint"
     },
     "config": {
         "sort-packages": true,

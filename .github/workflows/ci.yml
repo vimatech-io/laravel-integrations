@@ -4,42 +4,61 @@ on:
   push:
     branches: [main]
   pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
-  test:
+  tests:
     runs-on: ubuntu-latest
+
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         php: ['8.3', '8.4']
-        laravel: ['11.*', '12.*']
+        laravel: ['11.*', '12.*', '13.*']
+        include:
+          - laravel: '11.*'
+            testbench: '9.*'
+            pest: '^3.0'
+            pest_plugin: '^3.0'
+          - laravel: '12.*'
+            testbench: '10.*'
+            pest: '^3.0'
+            pest_plugin: '^3.0'
+          - laravel: '13.*'
+            testbench: '11.*'
+            pest: '^4.0'
+            pest_plugin: '^4.0'
 
-    name: PHP ${{ matrix.php }} · Laravel ${{ matrix.laravel }}
+    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: mbstring, dom, curl, pdo_sqlite
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, openssl
           coverage: none
 
       - name: Install dependencies
         run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" --no-update --no-interaction
-          composer update --prefer-dist --no-interaction --no-progress
+          composer config policy.advisories.block false
+          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "pestphp/pest:${{ matrix.pest }}" "pestphp/pest-plugin-laravel:${{ matrix.pest_plugin }}" --no-interaction --no-update --dev
+          composer update --prefer-stable --no-interaction
 
       - name: Run tests
         run: vendor/bin/pest
 
   quality:
     runs-on: ubuntu-latest
-    name: Lint & static analysis
+    name: Static analysis & code style
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -48,10 +67,10 @@ jobs:
           coverage: none
 
       - name: Install dependencies
-        run: composer update --prefer-dist --no-interaction --no-progress
+        run: composer install --no-interaction
 
-      - name: Check code style
+      - name: Run Pint
         run: vendor/bin/pint --test
 
       - name: Run PHPStan
-        run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+        run: vendor/bin/phpstan analyse

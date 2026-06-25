@@ -402,15 +402,30 @@ package is fully compatible with `config:cache` and `route:cache`.
 
 ```bash
 composer test     # Pest + orchestra/testbench
-composer lint     # Laravel Pint
-composer stan     # PHPStan (level max) + Larastan
+composer format   # Laravel Pint
+composer analyse  # PHPStan (level max) + Larastan
 ```
 
-## Credits
+## Contributing
 
-Built and maintained by [Vimatech](https://github.com/vimatech-io). Created by
-[Adel Zemzemi](https://github.com/vimatech-io).
+Contributions are welcome.
+
+Please ensure:
+- Tests pass (`composer test`)
+- PHPStan passes (`composer analyse`)
+- Code style is formatted with Pint (`composer format`)
+
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+
+## Security Vulnerabilities
+
+Please review our [Security Policy](SECURITY.md) for reporting vulnerabilities.
 
 ## License
 
 The MIT License (MIT). Please see the [License File](LICENSE) for more information.
+
+## Credits
+
+Built and maintained by [Vimatech](https://vimatech.io).
+Created by [Adel Zemzemi](https://github.com/adelzemzemi).
