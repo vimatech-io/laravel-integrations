@@ -1,0 +1,72 @@
+{
+    "name": "vimatech/laravel-integrations",
+    "description": "Config-driven ports & adapters foundation for integrating external providers in Laravel: capability drivers, context routing and normalized webhooks.",
+    "keywords": [
+        "laravel",
+        "integrations",
+        "ports-and-adapters",
+        "drivers",
+        "webhooks",
+        "adapter",
+        "vimatech"
+    ],
+    "homepage": "https://github.com/vimatech-io/laravel-integrations",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Adel Zemzemi",
+            "email": "hello@adelzemzemi.dev"
+        }
+    ],
+    "require": {
+        "php": "^8.3",
+        "illuminate/contracts": "^11.0 || ^12.0 || ^13.0",
+        "illuminate/support": "^11.0 || ^12.0 || ^13.0"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.18",
+        "orchestra/testbench": "^9.0 || ^10.0",
+        "pestphp/pest": "^3.5",
+        "pestphp/pest-plugin-laravel": "^3.0",
+        "phpstan/phpstan": "^2.0"
+    },
+    "suggest": {
+        "vimatech/laravel-secure-fields": "Encrypt provider credentials at rest by binding a custom CredentialStore."
+    },
+    "autoload": {
+        "psr-4": {
+            "Vimatech\\Integrations\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Vimatech\\Integrations\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "pest",
+        "test:coverage": "pest --coverage",
+        "lint": "pint",
+        "lint:test": "pint --test",
+        "stan": "phpstan analyse"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Vimatech\\Integrations\\IntegrationsServiceProvider"
+            ],
+            "aliases": {
+                "Integrations": "Vimatech\\Integrations\\Facades\\Integrations"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
