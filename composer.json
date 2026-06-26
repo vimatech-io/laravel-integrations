@@ -64,7 +64,5 @@
                 "Integrations": "Vimatech\\Integrations\\Facades\\Integrations"
             }
         }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }
