@@ -15,27 +15,7 @@ This package is intentionally **domain-free**: it ships no concrete vendor and n
 *capabilities* (what an adapter actually does) are contracts defined by **your** application or by
 consumer packages.
 
----
-
-## Table of contents
-
-- [Why](#why)
-- [Installation](#installation)
-- [Core concepts](#core-concepts)
-- [Configuration](#configuration)
-- [Adding a driver](#adding-a-driver)
-- [Resolving & routing drivers](#resolving--routing-drivers)
-- [Per-tenant overrides](#per-tenant-overrides)
-- [Webhooks](#webhooks)
-- [Credentials & secure storage](#credentials--secure-storage)
-- [The `integrations:list` command](#the-integrationslist-command)
-- [Testing](#testing)
-- [Octane & FrankenPHP](#octane--frankenphp)
-- [Quality](#quality)
-
----
-
-## Why
+## Why Laravel Integrations?
 
 External providers leak into business logic in predictable ways: a `match ($country)` here, a
 hard-coded SDK client there, bespoke webhook controllers everywhere. This package gives you a single,
@@ -51,6 +31,23 @@ Business logic ──▶ Integrations::for('einvoice')->resolve(['country' => $i
 
 Your business logic depends on a **capability contract**; the concrete provider is selected by
 configuration and runtime context.
+
+## Feature Matrix
+
+| Feature | Supported |
+|---|---|
+| Config-driven drivers (ports & adapters) | ✅ |
+| Context routing (by country, tenant, …) | ✅ |
+| Per-tenant driver overrides (from your DB) | ✅ |
+| Normalized inbound webhook pipeline | ✅ |
+| Canonical, provider-agnostic events | ✅ |
+| Webhook idempotency (cache or database) | ✅ |
+| Pluggable credential storage | ✅ |
+| Strict resolution (`resolveStrict`) | ✅ |
+| Test fakes & driver-usage assertions | ✅ |
+| Octane / FrankenPHP safe | ✅ |
+| Concrete vendors / business logic | ❌ (you own them) |
+| UI | ❌ |
 
 ## Installation
 
@@ -200,6 +197,45 @@ Integrations::for('einvoice')->resolveStrict(['country' => 'DE']); // throws Unr
 
 Other router methods: `default()`, `via('sdi')`, and `key($context)` (returns the resolved driver key
 without instantiating).
+
+## Complete Example
+
+```php
+use Vimatech\Integrations\Contracts\Driver;
+use Vimatech\Integrations\Facades\Integrations;
+
+// 1. Define the capability contract (your app owns this)
+interface EInvoiceNetwork extends Driver
+{
+    public function send(Invoice $invoice): string;
+}
+
+// 2. Write an adapter per provider
+final class ChorusProAdapter implements EInvoiceNetwork
+{
+    public function __construct(private array $config) {}
+
+    public function send(Invoice $invoice): string
+    {
+        // talk to Chorus Pro using $this->config['api_key']
+        return 'chorus-ref-123';
+    }
+}
+
+// 3. Register it in config/integrations.php
+'einvoice' => [
+    'default' => 'chorus_pro',
+    'routing' => ['by' => 'country', 'map' => ['FR' => 'chorus_pro', 'IT' => 'sdi']],
+    'drivers' => [
+        'chorus_pro' => ['class' => ChorusProAdapter::class, 'api_key' => env('CHORUS_PRO_KEY')],
+        'sdi'        => ['class' => SdiAdapter::class,        'api_key' => env('SDI_KEY')],
+    ],
+],
+
+// 4. Use it from business logic — the provider is chosen by context
+$driver = Integrations::for('einvoice')->resolve(['country' => $invoice->country]);
+$reference = $driver->send($invoice); // FR → ChorusProAdapter, IT → SdiAdapter
+```
 
 ## Per-tenant overrides
 
