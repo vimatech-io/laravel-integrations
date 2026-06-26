@@ -29,9 +29,6 @@ final class ContextRouter
         private readonly ?ResolvesTenantDriver $tenantResolver = null,
     ) {}
 
-    /**
-     * The capability's default driver.
-     */
     public function default(): Driver
     {
         $key = $this->registry->defaultKey($this->capability)
@@ -40,9 +37,6 @@ final class ContextRouter
         return $this->manager->driver($this->capability, $key);
     }
 
-    /**
-     * Resolve a driver by explicit key.
-     */
     public function via(string $key): Driver
     {
         return $this->manager->driver($this->capability, $key);

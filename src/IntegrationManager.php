@@ -51,9 +51,6 @@ class IntegrationManager
         return $this->resolved[$capability.':'.$key] ??= $this->resolve($capability, $key);
     }
 
-    /**
-     * Get a context router scoped to a capability.
-     */
     public function for(string $capability): ContextRouter
     {
         return new ContextRouter(
