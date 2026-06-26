@@ -47,16 +47,17 @@ final class WebhookController
         }
 
         $translator = $this->resolveTranslator($capability, $driver);
+        $effectiveDriver = $this->effectiveDriver($capability, $driver);
 
         if (! $translator->verify($request)) {
-            WebhookRejected::dispatch($capability, $driver, 'signature');
+            WebhookRejected::dispatch($capability, $effectiveDriver, 'signature');
 
             throw new HttpException(403, 'Invalid webhook signature.');
         }
 
         // Fires on every accepted delivery (including redeliveries); only the
         // translated canonical events below are de-duplicated.
-        WebhookReceived::dispatch($capability, $driver, $request->all());
+        WebhookReceived::dispatch($capability, $effectiveDriver, $request->all());
 
         $ttl = $this->eventTtl();
         $processed = 0;
@@ -108,5 +109,23 @@ final class WebhookController
         $ttl = $this->config->get('integrations.webhooks.event_ttl', self::DEFAULT_EVENT_TTL);
 
         return is_numeric($ttl) ? (int) $ttl : self::DEFAULT_EVENT_TTL;
+    }
+
+    /**
+     * The driver key that actually handled the delivery, for event reporting:
+     * the URL segment, else the capability default when the driver itself is
+     * the translator, else null for a capability-level configured translator.
+     */
+    private function effectiveDriver(string $capability, ?string $driver): ?string
+    {
+        if ($driver !== null) {
+            return $driver;
+        }
+
+        if ($this->registry->webhookTranslator($capability) !== null) {
+            return null;
+        }
+
+        return $this->registry->defaultKey($capability);
     }
 }
