@@ -1,8 +1,9 @@
 # Laravel Integrations
 
 [![CI](https://github.com/vimatech-io/laravel-integrations/actions/workflows/ci.yml/badge.svg)](https://github.com/vimatech-io/laravel-integrations/actions/workflows/ci.yml)
-[![Latest Version](https://img.shields.io/packagist/v/vimatech/laravel-integrations.svg)](https://packagist.org/packages/vimatech/laravel-integrations)
-[![License](https://img.shields.io/github/license/vimatech-io/laravel-integrations)](LICENSE)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/vimatech/laravel-integrations.svg)](https://packagist.org/packages/vimatech/laravel-integrations)
+[![Total Downloads](https://img.shields.io/packagist/dt/vimatech/laravel-integrations.svg)](https://packagist.org/packages/vimatech/laravel-integrations)
+[![License](https://img.shields.io/packagist/l/vimatech/laravel-integrations.svg)](https://packagist.org/packages/vimatech/laravel-integrations)
 
 A config-driven **ports & adapters** foundation for integrating external providers in Laravel.
 
