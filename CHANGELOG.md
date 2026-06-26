@@ -5,7 +5,7 @@ All notable changes to `vimatech/laravel-integrations` will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0] - 2026-06-26
 
 ### Added
 
@@ -28,4 +28,4 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `integrations:list` Artisan command.
 - Publishable config and migration.
 
-[Unreleased]: https://github.com/vimatech-io/laravel-integrations/commits/main
+[1.0.0]: https://github.com/vimatech-io/laravel-integrations/releases/tag/v1.0.0
