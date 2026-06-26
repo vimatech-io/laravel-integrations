@@ -7,6 +7,7 @@ namespace Vimatech\Integrations\Tests;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Vimatech\Integrations\IntegrationsServiceProvider;
 use Vimatech\Integrations\Tests\Fixtures\AdyenGateway;
+use Vimatech\Integrations\Tests\Fixtures\StandaloneTranslator;
 use Vimatech\Integrations\Tests\Fixtures\StripeGateway;
 use Vimatech\Integrations\Tests\Fixtures\StripeWebhookGateway;
 
@@ -54,6 +55,29 @@ abstract class TestCase extends Orchestra
                 ],
                 'webhooks' => [
                     'enabled' => true,
+                ],
+            ],
+            // Webhooks handled by a capability-level translator class.
+            'standalone' => [
+                'webhooks' => [
+                    'enabled' => true,
+                    'translator' => StandaloneTranslator::class,
+                ],
+            ],
+            // Webhooks enabled but the driver is not a WebhookTranslator.
+            'broken_hooks' => [
+                'default' => 'plain',
+                'drivers' => [
+                    'plain' => ['class' => StripeGateway::class],
+                ],
+                'webhooks' => [
+                    'enabled' => true,
+                ],
+            ],
+            // No default driver configured.
+            'nodefault' => [
+                'drivers' => [
+                    'a' => ['class' => StripeGateway::class],
                 ],
             ],
         ]);

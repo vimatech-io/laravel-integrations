@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Event;
 use Vimatech\Integrations\Events\WebhookReceived;
 use Vimatech\Integrations\Events\WebhookRejected;
+use Vimatech\Integrations\Exceptions\IntegrationException;
 use Vimatech\Integrations\Tests\Fixtures\PaymentSettled;
 
 function postWebhook(array $events, string $signature = 'whsec_test')
@@ -59,3 +60,34 @@ it('returns 404 when webhooks are disabled for the capability', function (): voi
     test()->postJson('integrations/webhooks/payments', ['events' => []], ['X-Signature' => 'whsec_test'])
         ->assertNotFound();
 });
+
+it('reports the resolved default driver in the received event', function (): void {
+    Event::fake([WebhookReceived::class]);
+
+    postWebhook([['reference' => 'inv-1', 'amount' => 1000]]);
+
+    Event::assertDispatched(
+        WebhookReceived::class,
+        fn (WebhookReceived $e): bool => $e->driver === 'stripe_hooks',
+    );
+});
+
+it('uses a capability-level configured translator class', function (): void {
+    Event::fake([WebhookReceived::class, PaymentSettled::class]);
+
+    test()->postJson(
+        'integrations/webhooks/standalone',
+        ['events' => [['reference' => 'r-1', 'amount' => 500]]],
+        ['X-Token' => 'ok'],
+    )->assertOk()->assertJson(['processed' => 1]);
+
+    Event::assertDispatched(PaymentSettled::class);
+    // A configured translator is capability-level, so no driver is reported.
+    Event::assertDispatched(WebhookReceived::class, fn (WebhookReceived $e): bool => $e->driver === null);
+});
+
+it('fails when the resolved driver is not a webhook translator', function (): void {
+    test()->withoutExceptionHandling();
+
+    test()->postJson('integrations/webhooks/broken_hooks', ['events' => []], ['X-Signature' => 'x']);
+})->throws(IntegrationException::class);

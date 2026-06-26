@@ -53,3 +53,15 @@ it('defers to routing when the tenant resolver returns null', function (): void 
     expect(Integrations::for('payments')->resolve(['tenant' => 99, 'country' => 'NL']))
         ->toBeInstanceOf(AdyenGateway::class);
 });
+
+it('throws when default() is called and no default is configured', function (): void {
+    Integrations::for('nodefault')->default();
+})->throws(UnresolvableDriver::class);
+
+it('throws when resolving with no context, no routing and no default', function (): void {
+    Integrations::for('nodefault')->resolve();
+})->throws(UnresolvableDriver::class);
+
+it('still resolves an explicit key when no default is configured', function (): void {
+    expect(Integrations::for('nodefault')->via('a'))->toBeInstanceOf(StripeGateway::class);
+});

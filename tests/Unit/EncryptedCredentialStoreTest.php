@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 use Vimatech\Integrations\Credentials\EncryptedCredentialStore;
+use Vimatech\Integrations\DriverRegistry;
+use Vimatech\Integrations\IntegrationManager;
+use Vimatech\Integrations\Tests\Fixtures\StripeGateway;
 
 it('decrypts only the listed credential keys', function (): void {
     $encrypter = app('encrypter');
@@ -29,4 +32,29 @@ it('passes through values that are not valid ciphertext', function (): void {
     ]);
 
     expect($resolved['api_key'])->toBe('not-encrypted');
+});
+
+it('decrypts credentials through the manager before building the driver', function (): void {
+    $encrypter = app('encrypter');
+
+    $registry = new DriverRegistry([
+        'payments' => [
+            'default' => 'stripe',
+            'drivers' => [
+                'stripe' => [
+                    'class' => StripeGateway::class,
+                    'api_key' => $encrypter->encrypt('top-secret'),
+                    'encrypted' => ['api_key'],
+                ],
+            ],
+        ],
+    ]);
+
+    $manager = new IntegrationManager(app(), $registry, new EncryptedCredentialStore($encrypter));
+
+    /** @var StripeGateway $driver */
+    $driver = $manager->driver('payments', 'stripe');
+
+    expect($driver->config()['api_key'])->toBe('top-secret')
+        ->and($driver->config())->not->toHaveKey('encrypted');
 });
