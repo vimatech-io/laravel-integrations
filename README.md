@@ -315,7 +315,7 @@ encrypter:
 ],
 ```
 
-To store credentials with [`vimatech/laravel-secure-fields`](https://github.com/vimatech-io) or any
+To store credentials with [`vimatech/laravel-secure-fields`](https://github.com/vimatech-io/laravel-secure-fields) or any
 other backend, bind your own `CredentialStore` — the package never assumes a vendor:
 
 ```php
