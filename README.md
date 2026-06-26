@@ -198,45 +198,6 @@ Integrations::for('einvoice')->resolveStrict(['country' => 'DE']); // throws Unr
 Other router methods: `default()`, `via('sdi')`, and `key($context)` (returns the resolved driver key
 without instantiating).
 
-## Complete Example
-
-```php
-use Vimatech\Integrations\Contracts\Driver;
-use Vimatech\Integrations\Facades\Integrations;
-
-// 1. Define the capability contract (your app owns this)
-interface EInvoiceNetwork extends Driver
-{
-    public function send(Invoice $invoice): string;
-}
-
-// 2. Write an adapter per provider
-final class ChorusProAdapter implements EInvoiceNetwork
-{
-    public function __construct(private array $config) {}
-
-    public function send(Invoice $invoice): string
-    {
-        // talk to Chorus Pro using $this->config['api_key']
-        return 'chorus-ref-123';
-    }
-}
-
-// 3. Register it in config/integrations.php
-'einvoice' => [
-    'default' => 'chorus_pro',
-    'routing' => ['by' => 'country', 'map' => ['FR' => 'chorus_pro', 'IT' => 'sdi']],
-    'drivers' => [
-        'chorus_pro' => ['class' => ChorusProAdapter::class, 'api_key' => env('CHORUS_PRO_KEY')],
-        'sdi'        => ['class' => SdiAdapter::class,        'api_key' => env('SDI_KEY')],
-    ],
-],
-
-// 4. Use it from business logic — the provider is chosen by context
-$driver = Integrations::for('einvoice')->resolve(['country' => $invoice->country]);
-$reference = $driver->send($invoice); // FR → ChorusProAdapter, IT → SdiAdapter
-```
-
 ## Per-tenant overrides
 
 Bind an implementation of `ResolvesTenantDriver` to let the database decide. Return `null` to defer to
