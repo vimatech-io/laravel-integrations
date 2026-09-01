@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Database\QueryException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Vimatech\Integrations\Webhooks\CacheEventKeyStore;
@@ -27,4 +28,12 @@ it('acquires a database key once', function (): void {
     expect($store->acquire('evt-1', 60))->toBeTrue()
         ->and($store->acquire('evt-1', 60))->toBeFalse()
         ->and($store->acquire('evt-2', 60))->toBeTrue();
+});
+
+it('reports a database failure instead of calling the event a duplicate', function (): void {
+    // no table created: the insert fails for a reason that is not a duplicate key
+    $store = new DatabaseEventKeyStore(app('db')->connection(), 'integration_webhook_events');
+
+    expect(fn () => $store->acquire('evt-1', 60))
+        ->toThrow(QueryException::class);
 });

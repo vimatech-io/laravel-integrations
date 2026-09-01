@@ -9,6 +9,7 @@ use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\ServiceProvider;
+use InvalidArgumentException;
 use Vimatech\Integrations\Console\ListIntegrationsCommand;
 use Vimatech\Integrations\Contracts\CredentialStore;
 use Vimatech\Integrations\Contracts\EventKeyStore;
@@ -66,9 +67,16 @@ final class IntegrationsServiceProvider extends ServiceProvider
             /** @var Config $config */
             $config = $app->make('config');
 
-            return match ($config->get('integrations.credentials.store', 'config')) {
+            $store = $config->get('integrations.credentials.store', 'config');
+
+            return match ($store) {
+                'config' => new ConfigCredentialStore,
                 'encrypted' => new EncryptedCredentialStore($app->make(Encrypter::class)),
-                default => new ConfigCredentialStore,
+                default => throw new InvalidArgumentException(sprintf(
+                    'Unknown credential store [%s]. Use "config" or "encrypted". '
+                    .'Falling back would read your credentials in clear.',
+                    is_scalar($store) ? (string) $store : get_debug_type($store),
+                )),
             };
         });
     }
@@ -79,14 +87,21 @@ final class IntegrationsServiceProvider extends ServiceProvider
             /** @var Config $config */
             $config = $app->make('config');
 
-            return match ($config->get('integrations.webhooks.event_store', 'cache')) {
+            $store = $config->get('integrations.webhooks.event_store', 'cache');
+
+            return match ($store) {
                 'database' => new DatabaseEventKeyStore(
                     $app->make(DatabaseManager::class)->connection(),
                     $this->stringConfig($config, 'integrations.webhooks.event_table', 'integration_webhook_events'),
                 ),
-                default => new CacheEventKeyStore(
+                'cache' => new CacheEventKeyStore(
                     $app->make('cache')->store($this->nullableStringConfig($config, 'integrations.webhooks.cache_store')),
                 ),
+                default => throw new InvalidArgumentException(sprintf(
+                    'Unknown webhook event store [%s]. Use "cache" or "database". '
+                    .'Falling back would downgrade idempotency to the cache store.',
+                    is_scalar($store) ? (string) $store : get_debug_type($store),
+                )),
             };
         });
     }
