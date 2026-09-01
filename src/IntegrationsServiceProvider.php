@@ -116,7 +116,7 @@ final class IntegrationsServiceProvider extends ServiceProvider
             self::CONFIG_PATH => $this->app->configPath('integrations.php'),
         ], 'integrations-config');
 
-        $this->publishes([
+        $this->publishesMigrations([
             __DIR__.'/../database/migrations' => $this->app->databasePath('migrations'),
         ], 'integrations-migrations');
     }

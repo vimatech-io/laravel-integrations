@@ -7,6 +7,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-01
+
+### Changed
+
+- The webhook events migration is published with `publishesMigrations()`, so the date in its filename is replaced with the time you publish it. It shipped as `0001_01_01_000000`, which sorts ahead of every migration an application can write and forced the package's table to be created first in the run order. Keeping a date in the filename is what makes the substitution possible: the framework replaces an existing date pattern and never adds a missing one, so a date-less filename would opt out of the mechanism rather than into it.
+
+  This depends on `migrations.update_date_on_publish` being present in your `config/database.php`. Applications upgraded from Laravel 10 may not have that key, and without it the original date is kept.
+
+### Upgrading
+
+**Do not re-publish the migration if you have already run it.** Publishing again writes a second file, dated at the time you publish, that creates a table you already have; `migrate` then fails on it. Only publish on an installation that has never published it. Nothing changes for an installation that upgrades without re-publishing.
+
 ## [1.0.1] - 2026-06-26
 
 ### Changed
