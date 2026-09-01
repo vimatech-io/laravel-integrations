@@ -24,6 +24,8 @@ abstract class TestCase extends Orchestra
     {
         $config = $app['config'];
 
+        $config->set('database.migrations.update_date_on_publish', true);
+
         $config->set('integrations.capabilities', [
             'payments' => [
                 'default' => 'stripe',
