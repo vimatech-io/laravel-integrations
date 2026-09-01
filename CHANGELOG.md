@@ -9,7 +9,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.1.0] - 2026-09-01
 
+### Fixed
+
+- The database idempotency store no longer reads every database failure as "this event was already handled". It caught `QueryException` unconditionally and returned false, which the webhook controller treats as a duplicate and skips; a missing table, a closed connection or a denied permission therefore produced `HTTP 200 {"processed": 0}`. The provider recorded a successful delivery and never redelivered, so the events were lost with nothing raised anywhere. Only an integrity constraint violation — SQLSTATE class 23, the unique index doing its job — now counts as a duplicate; anything else is re-thrown so the delivery fails and the provider retries.
+
 ### Changed
+
+- An unrecognised `credentials.store` or `webhooks.event_store` is refused instead of silently selecting the weaker option. `credentials.store` fell through to the plaintext store, so a typo such as `encryped` read every credential in clear while the operator believed encryption was on; `webhooks.event_store` fell through from the durable database store to the cache store. Both now name the valid values and say what falling back would have cost. An application whose configuration is already correct is unaffected.
 
 - The webhook events migration is published with `publishesMigrations()`, so the date in its filename is replaced with the time you publish it. It shipped as `0001_01_01_000000`, which sorts ahead of every migration an application can write and forced the package's table to be created first in the run order. Keeping a date in the filename is what makes the substitution possible: the framework replaces an existing date pattern and never adds a missing one, so a date-less filename would opt out of the mechanism rather than into it.
 
