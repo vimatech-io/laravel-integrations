@@ -1,14 +1,13 @@
 {
     "name": "vimatech/laravel-integrations",
-    "description": "Config-driven ports & adapters foundation for integrating external providers in Laravel: capability drivers, context routing and normalized webhooks.",
+    "description": "Config-driven ports and adapters for Laravel: integrate external providers through capability drivers, context routing and normalized webhooks.",
     "keywords": [
         "laravel",
         "integrations",
         "ports-and-adapters",
         "drivers",
         "webhooks",
-        "adapter",
-        "vimatech"
+        "adapter"
     ],
     "homepage": "https://github.com/vimatech-io/laravel-integrations",
     "license": "MIT",
