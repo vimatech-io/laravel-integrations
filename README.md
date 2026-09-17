@@ -1,13 +1,18 @@
-# Laravel Integrations
+<a href="https://vimatech.io/open-source">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://vimatech.io/packages/header/laravel-integrations/dark.webp">
+    <img alt="Laravel Integrations" src="https://vimatech.io/packages/header/laravel-integrations/light.webp">
+  </picture>
+</a>
+
+# A ports and adapters foundation for external providers
 
 [![CI](https://github.com/vimatech-io/laravel-integrations/actions/workflows/ci.yml/badge.svg)](https://github.com/vimatech-io/laravel-integrations/actions/workflows/ci.yml)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/vimatech/laravel-integrations.svg)](https://packagist.org/packages/vimatech/laravel-integrations)
 [![Total Downloads](https://img.shields.io/packagist/dt/vimatech/laravel-integrations.svg)](https://packagist.org/packages/vimatech/laravel-integrations)
 [![License](https://img.shields.io/packagist/l/vimatech/laravel-integrations.svg)](https://packagist.org/packages/vimatech/laravel-integrations)
 
-A config-driven **ports & adapters** foundation for integrating external providers in Laravel.
-
-Adding a provider means writing **one isolated adapter class and a config entry** — you never touch
+Adding a provider means writing **one isolated adapter class and a config entry**: you never touch
 business logic, routing, or the webhook pipeline. It generalizes Laravel's own `Manager`/driver pattern
 with **context routing** (route a capability to a driver by country, tenant, …) and a **normalized
 inbound webhook pipeline** (verify → translate → de-duplicate → dispatch canonical events).
@@ -80,7 +85,7 @@ Requires **PHP 8.3+** and **Laravel 11, 12 or 13**.
 
 ## Configuration
 
-`config/integrations.php` (abbreviated — see the published file for full comments):
+`config/integrations.php` (abbreviated, see the published file for full comments):
 
 ```php
 return [
@@ -156,7 +161,7 @@ final class ChorusProAdapter implements EInvoiceNetwork
 }
 ```
 
-**3. Register it in config** under the capability's `drivers` map. That's it — no business-logic
+**3. Register it in config** under the capability's `drivers` map. That's it. No business-logic
 changes.
 
 > Need bespoke construction (a pre-built SDK client, etc.)? Register a factory:
@@ -178,7 +183,7 @@ $driver = Integrations::driver('einvoice', 'sdi');
 // Capability default
 $driver = Integrations::driver('einvoice');
 
-// Route by context — uses the capability's `routing.by` dimension
+// Route by context: uses the capability's `routing.by` dimension
 $driver = Integrations::for('einvoice')->resolve(['country' => $invoice->country]);
 ```
 
@@ -235,7 +240,7 @@ POST {prefix}/{capability}/{driver?}
 For each request, the pipeline:
 
 1. Checks that webhooks are **enabled** for the capability (else `404`).
-2. Resolves a `WebhookTranslator` — the configured `webhooks.translator`, or the resolved driver if it
+2. Resolves a `WebhookTranslator`: the configured `webhooks.translator`, or the resolved driver if it
    implements `WebhookTranslator`.
 3. Calls `verify($request)`. On failure it dispatches `WebhookRejected` and returns `403`.
 4. Dispatches `WebhookReceived`.
@@ -290,8 +295,8 @@ final class InvoiceDelivered extends CanonicalEvent
 
 **Idempotency store** is configurable via `webhooks.event_store`:
 
-- `cache` (default) — uses the atomic `Cache::add()` operation.
-- `database` — uses a unique index on the published `integration_webhook_events` table.
+- `cache` (default): uses the atomic `Cache::add()` operation.
+- `database`: uses a unique index on the published `integration_webhook_events` table.
 
 > **Idempotency is claimed *before* dispatch.** An event key is marked as seen
 > as soon as it is accepted, so a redelivery is skipped even if a listener fails.
@@ -317,7 +322,7 @@ encrypter:
 ```
 
 To store credentials with [`vimatech/laravel-secure-fields`](https://github.com/vimatech-io/laravel-secure-fields) or any
-other backend, bind your own `CredentialStore` — the package never assumes a vendor:
+other backend, bind your own `CredentialStore`, the package never assumes a vendor:
 
 ```php
 use Vimatech\Integrations\Contracts\CredentialStore;
@@ -364,7 +369,7 @@ and `used()` for the raw record.
 ## Octane & FrankenPHP
 
 The package is built for long-lived workers. It keeps **no static or global state**; the only mutable
-state is the per-key driver instance cache on the `IntegrationManager` singleton — which is a
+state is the per-key driver instance cache on the `IntegrationManager` singleton, which is a
 performance *win* under workers, since each adapter is built once and reused across requests.
 
 Three rules keep it safe and fast in worker mode:
@@ -373,13 +378,13 @@ Three rules keep it safe and fast in worker mode:
    state (the current user, the `Request`, a cart) on an adapter, or it will leak into the next request.
    Driver resolution itself is just array lookups plus a one-time container build.
 
-2. **Queue your canonical-event listeners** (`ShouldQueue`) — see the
-   [webhook idempotency note](#webhooks). The worker returns `200` immediately and retries happen on the
+2. **Queue your canonical-event listeners** (`ShouldQueue`). See the
+   [webhook idempotency note](#webhooks): the worker returns `200` immediately and retries happen on the
    queue.
 
 3. **Per-tenant credentials via `extend()`?** The instance cache is keyed by `capability:key`, not by
    tenant. That is correct when credentials come from config (static per key). Only if you register an
-   `extend()` factory that *captures* per-tenant credentials do you need to avoid the shared cache —
+   `extend()` factory that *captures* per-tenant credentials do you need to avoid the shared cache:
    resolve those per tenant in your own code instead.
 
 If (and only if) you intentionally keep request state on an adapter, flush the cache each request:
@@ -391,7 +396,7 @@ use Vimatech\Integrations\IntegrationManager;
 Event::listen(RequestReceived::class, fn () => app(IntegrationManager::class)->forgetDrivers());
 ```
 
-Leave this off otherwise — it discards the build cache that makes workers fast.
+Leave this off otherwise: it discards the build cache that makes workers fast.
 
 `env()` is only ever read inside `config/integrations.php`, and routes are registered once, so the
 package is fully compatible with `config:cache` and `route:cache`.
