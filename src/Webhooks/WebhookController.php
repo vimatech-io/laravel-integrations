@@ -64,7 +64,7 @@ final class WebhookController
 
         foreach ($translator->translate($request) as $event) {
             if (! $this->store->acquire($event->idempotencyKey(), $ttl)) {
-                continue; // Duplicate delivery — already handled.
+                continue; // Duplicate delivery, already handled.
             }
 
             $this->events->dispatch($event);

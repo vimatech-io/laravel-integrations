@@ -7,15 +7,19 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- `integrations:list` prints `default: none` for a capability with no default driver, instead of a dash. Only scripts parsing the command output are affected.
+
 ## [1.1.0] - 2026-09-01
 
 ### Fixed
 
-- The database idempotency store no longer reads every database failure as "this event was already handled". It caught `QueryException` unconditionally and returned false, which the webhook controller treats as a duplicate and skips; a missing table, a closed connection or a denied permission therefore produced `HTTP 200 {"processed": 0}`. The provider recorded a successful delivery and never redelivered, so the events were lost with nothing raised anywhere. Only an integrity constraint violation — SQLSTATE class 23, the unique index doing its job — now counts as a duplicate; anything else is re-thrown so the delivery fails and the provider retries.
+- The database idempotency store no longer reads every database failure as "this event was already handled". It caught `QueryException` unconditionally and returned false, which the webhook controller treats as a duplicate and skips; a missing table, a closed connection or a denied permission therefore produced `HTTP 200 {"processed": 0}`. The provider recorded a successful delivery and never redelivered, so the events were lost with nothing raised anywhere. Only an integrity constraint violation (SQLSTATE class 23, the unique index doing its job) now counts as a duplicate; anything else is re-thrown so the delivery fails and the provider retries.
 
 ### Changed
 
-- An unrecognised `credentials.store` or `webhooks.event_store` is refused instead of silently selecting the weaker option. `credentials.store` fell through to the plaintext store, so a typo such as `encryped` read every credential in clear while the operator believed encryption was on; `webhooks.event_store` fell through from the durable database store to the cache store. Both now name the valid values and say what falling back would have cost. An application whose configuration is already correct is unaffected.
+- **Behaviour change.** An unrecognised `credentials.store` or `webhooks.event_store` is refused instead of silently selecting the weaker option. `credentials.store` fell through to the plaintext store, so a typo such as `encryped` read every credential in clear while the operator believed encryption was on; `webhooks.event_store` fell through from the durable database store to the cache store. Both now name the valid values and say what falling back would have cost. An application whose configuration is already correct is unaffected. An application with an unrecognised value in either key, which used to boot on the weaker store, now throws: correct the value before upgrading.
 
 - The webhook events migration is published with `publishesMigrations()`, so the date in its filename is replaced with the time you publish it. It shipped as `0001_01_01_000000`, which sorts ahead of every migration an application can write and forced the package's table to be created first in the run order. Keeping a date in the filename is what makes the substitution possible: the framework replaces an existing date pattern and never adds a missing one, so a date-less filename would opt out of the mechanism rather than into it.
 
@@ -36,11 +40,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- `IntegrationManager` — resolves drivers by capability + config key, with a custom-factory `extend()`
+- `IntegrationManager`: resolves drivers by capability + config key, with a custom-factory `extend()`
   hook and instance caching.
-- `DriverRegistry` — read-only access to the configured capabilities, drivers, routing and webhook
+- `DriverRegistry`: read-only access to the configured capabilities, drivers, routing and webhook
   settings.
-- `ContextRouter` (`Integrations::for($capability)`) — resolves a driver by default or by context
+- `ContextRouter` (`Integrations::for($capability)`): resolves a driver by default or by context
   array, with `resolve()`, `resolveStrict()`, `default()`, `via()` and `key()`.
 - `ResolvesTenantDriver` contract for per-tenant driver overrides from the database.
 - Generic inbound webhook pipeline: `WebhookTranslator` contract, signature verification, canonical
@@ -55,4 +59,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `integrations:list` Artisan command.
 - Publishable config and migration.
 
+[Unreleased]: https://github.com/vimatech-io/laravel-integrations/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/vimatech-io/laravel-integrations/compare/v1.0.1...v1.1.0
+[1.0.1]: https://github.com/vimatech-io/laravel-integrations/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/vimatech-io/laravel-integrations/releases/tag/v1.0.0

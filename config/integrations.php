@@ -18,7 +18,7 @@ return [
     |
     | To store credentials at rest with vimatech/laravel-secure-fields, bind
     | your own implementation of Vimatech\Integrations\Contracts\CredentialStore
-    | in a service provider — this package never assumes a vendor.
+    | in a service provider. This package never assumes a vendor.
     |
     */
 
@@ -66,7 +66,7 @@ return [
     |
     | A capability is a contract owned by a CONSUMER package (for example an
     | "e-invoice network" or a "payment gateway"). This package does not know
-    | any concrete capability — it only wires drivers, routing and webhooks.
+    | any concrete capability: it only wires drivers, routing and webhooks.
     |
     | Schema per capability:
     |

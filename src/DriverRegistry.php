@@ -8,7 +8,7 @@ use Vimatech\Integrations\Exceptions\DriverNotConfigured;
 
 /**
  * Read-only view over the configured capabilities, drivers, routing and
- * webhook settings. Pure configuration access — it never instantiates drivers.
+ * webhook settings. Pure configuration access: it never instantiates drivers.
  *
  * @phpstan-type DriverConfig array{class?: class-string, encrypted?: list<string>}&array<string, mixed>
  * @phpstan-type RoutingConfig array{by?: string, map?: array<string, string>}
