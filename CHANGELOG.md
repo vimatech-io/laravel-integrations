@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-10-05
+
 ### Changed
 
 - `integrations:list` prints `default: none` for a capability with no default driver, instead of a dash. Only scripts parsing the command output are affected.
@@ -59,7 +61,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `integrations:list` Artisan command.
 - Publishable config and migration.
 
-[Unreleased]: https://github.com/vimatech-io/laravel-integrations/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/vimatech-io/laravel-integrations/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/vimatech-io/laravel-integrations/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/vimatech-io/laravel-integrations/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/vimatech-io/laravel-integrations/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/vimatech-io/laravel-integrations/releases/tag/v1.0.0
