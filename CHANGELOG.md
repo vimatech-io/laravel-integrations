@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- `integrations:list` prints `default: none` for a capability with no default driver, instead of a dash. Only scripts parsing the command output are affected.
+
 ## [1.1.0] - 2026-09-01
 
 ### Fixed
