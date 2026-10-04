@@ -49,7 +49,7 @@ it('is idempotent across repeated deliveries of the same event', function (): vo
     postWebhook([['reference' => 'inv-1', 'amount' => 1000]])
         ->assertJson(['processed' => 1]);
 
-    // Same idempotency key — should be skipped on redelivery.
+    // Same idempotency key: should be skipped on redelivery.
     postWebhook([['reference' => 'inv-1', 'amount' => 1000]])
         ->assertJson(['processed' => 0]);
 

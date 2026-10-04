@@ -15,7 +15,7 @@ use Vimatech\Integrations\Routing\ContextRouter;
 /**
  * Resolves integration drivers by capability + key from configuration, in the
  * spirit of Illuminate\Support\Manager but fully config-driven so that adding a
- * provider means adding an adapter class and a config entry — nothing else.
+ * provider means adding an adapter class and a config entry, nothing else.
  */
 class IntegrationManager
 {

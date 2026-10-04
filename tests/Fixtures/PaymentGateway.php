@@ -7,7 +7,7 @@ namespace Vimatech\Integrations\Tests\Fixtures;
 use Vimatech\Integrations\Contracts\Driver;
 
 /**
- * Example capability contract — the kind of interface a CONSUMER package would
+ * Example capability contract, the kind of interface a CONSUMER package would
  * define. The integrations package itself never sees this.
  */
 interface PaymentGateway extends Driver

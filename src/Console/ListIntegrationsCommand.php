@@ -28,7 +28,7 @@ final class ListIntegrationsCommand extends Command
         }
 
         foreach ($capabilities as $capability) {
-            $default = $registry->defaultKey($capability) ?? '—';
+            $default = $registry->defaultKey($capability) ?? 'none';
             $routing = $registry->routing($capability);
 
             $this->components->twoColumnDetail("<fg=cyan;options=bold>{$capability}</>", "default: <fg=green>{$default}</>");
