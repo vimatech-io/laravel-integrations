@@ -434,4 +434,4 @@ The MIT License (MIT). Please see the [License File](LICENSE) for more informati
 ## Credits
 
 Built and maintained by [Vimatech](https://vimatech.io).
-Created by [Adel Zemzemi](https://github.com/adelzemzemi).
+Created by [Adel Zemzemi](https://adelzemzemi.com/?utm_source=github&utm_medium=package&utm_campaign=laravel-integrations), Laravel SaaS architect.
