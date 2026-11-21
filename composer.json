@@ -9,7 +9,7 @@
         "webhooks",
         "adapter"
     ],
-    "homepage": "https://github.com/vimatech-io/laravel-integrations",
+    "homepage": "https://vimatech.io/open-source/",
     "support": {
         "issues": "https://github.com/vimatech-io/laravel-integrations/issues",
         "source": "https://github.com/vimatech-io/laravel-integrations",
@@ -19,7 +19,8 @@
     "authors": [
         {
             "name": "Adel Zemzemi",
-            "email": "hello@adelzemzemi.com"
+            "email": "hello@adelzemzemi.com",
+            "homepage": "https://adelzemzemi.com/"
         }
     ],
     "require": {
